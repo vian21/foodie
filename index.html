@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Foodie - Your AI-powered recipe generator"
+    />
+    <meta name="theme-color" content="#10b981" />
+    <title>Foodie - AI Recipe Generator</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="assets/icons/icon-192x192.svg" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      /* Custom animations */
+      .fade-in {
+        animation: fadeIn 0.3s ease-in;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Hide scrollbar but keep functionality */
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+
+      .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      /* Loading spinner */
+      .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #10b981;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Active navigation link */
+      .nav-link.active {
+        background-color: #059669;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <!-- Mobile Navbar -->
+    <nav
+      class="bg-emerald-600 text-white shadow-lg fixed top-0 left-0 right-0 z-50"
+    >
+      <div class="flex items-center justify-between px-4 py-3">
+        <h1 class="text-xl font-bold">Foodie</h1>
+        <button id="hamburger" class="text-white focus:outline-none">
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            ></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile Menu (Hidden by default) -->
+      <div id="mobile-menu" class="hidden bg-emerald-700 px-4 py-2">
+        <a
+          href="#home"
+          data-page="home"
+          class="nav-link flex items-center py-2 hover:bg-emerald-800 px-2 rounded"
+        >
+          <svg
+            class="w-5 h-5 mr-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+            ></path>
+          </svg>
+          <span>Home</span>
+        </a>
+        <a
+          href="#recipes"
+          data-page="recipes"
+          class="nav-link flex items-center py-2 hover:bg-emerald-800 px-2 rounded"
+        >
+          <svg
+            class="w-5 h-5 mr-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+            ></path>
+          </svg>
+          <span>Recipes</span>
+        </a>
+        <a
+          href="#fridge"
+          data-page="fridge"
+          class="nav-link flex items-center py-2 hover:bg-emerald-800 px-2 rounded"
+        >
+          <svg
+            class="w-5 h-5 mr-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+            ></path>
+          </svg>
+          <span>Fridge</span>
+        </a>
+        <a
+          href="#byok"
+          data-page="byok"
+          class="nav-link flex items-center py-2 hover:bg-emerald-800 px-2 rounded"
+        >
+          <svg
+            class="w-5 h-5 mr-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+            ></path>
+          </svg>
+          <span>BYOK</span>
+        </a>
+        <a
+          href="#settings"
+          data-page="settings"
+          class="nav-link flex items-center py-2 hover:bg-emerald-800 px-2 rounded"
+        >
+          <svg
+            class="w-5 h-5 mr-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+            ></path>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            ></path>
+          </svg>
+          <span>Settings</span>
+        </a>
+        <a
+          href="#about"
+          data-page="about"
+          class="nav-link flex items-center py-2 hover:bg-emerald-800 px-2 rounded"
+        >
+          <svg
+            class="w-5 h-5 mr-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <span>About</span>
+        </a>
+      </div>
+
+      <!-- Network Status Indicator -->
+      <div
+        id="offline-indicator"
+        class="hidden bg-red-600 text-center py-1 text-sm"
+      >
+        You are offline - Generation unavailable
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="app-content" class="pt-16 pb-6 px-4 max-w-2xl mx-auto">
+      <!-- Content will be dynamically loaded here -->
+    </main>
+
+    <!-- Modal for Recipe Details -->
+    <div
+      id="recipe-modal"
+      class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto"
+    >
+      <div class="min-h-screen px-4 flex items-center justify-center">
+        <div
+          class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto relative"
+        >
+          <button
+            id="close-modal"
+            class="sticky top-0 right-0 float-right m-4 text-gray-600 hover:text-gray-800"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
+            </svg>
+          </button>
+          <div id="modal-content" class="p-6">
+            <!-- Recipe details will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/storage.js"></script>
+    <script src="js/gemini.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+      // Register Service Worker
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("service-worker.js")
+            .then((reg) => console.log("Service Worker registered"))
+            .catch((err) =>
+              console.log("Service Worker registration failed:", err),
+            );
+        });
+      }
+
+      // Check online/offline status
+      window.addEventListener("online", () => {
+        document.getElementById("offline-indicator").classList.add("hidden");
+      });
+
+      window.addEventListener("offline", () => {
+        document.getElementById("offline-indicator").classList.remove("hidden");
+      });
+
+      // Initialize app
+      if (!navigator.onLine) {
+        document.getElementById("offline-indicator").classList.remove("hidden");
+      }
+    </script>
+  </body>
+</html>
