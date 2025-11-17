@@ -131,7 +131,7 @@ const App = {
   renderRecipesList(recipes) {
     if (recipes.length === 0) {
       return Components.emptyState(
-        "🍳",
+        '<svg class="w-16 h-16 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/></svg>',
         "No recipes yet",
         "Generate some recipes to get started!",
       );
@@ -190,7 +190,7 @@ const App = {
         ${
           bookmarked.length === 0
             ? Components.emptyState(
-                "📚",
+                '<svg class="w-16 h-16 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>',
                 "No bookmarked recipes",
                 "Star recipes from the home page to save them here!",
                 '<a href="#home" class="bg-emerald-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-emerald-700">Go to Home</a>',
@@ -230,7 +230,7 @@ const App = {
           ${
             items.length === 0
               ? Components.emptyState(
-                  "🥕",
+                  '<svg class="w-16 h-16 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>',
                   "Your fridge is empty",
                   "Add ingredients to help AI generate better recipes!",
                 )
@@ -449,7 +449,12 @@ const App = {
     container.innerHTML = `
       <div class="space-y-6">
         <div class="text-center">
-          <div class="text-6xl mb-4">🍳</div>
+          <div class="mb-4">
+            <svg class="w-16 h-16 text-emerald-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+            </svg>
+          </div>
           <h2 class="text-3xl font-bold text-gray-800 mb-2">Foodie</h2>
           <p class="text-gray-600">AI-Powered Recipe Generator</p>
         </div>
