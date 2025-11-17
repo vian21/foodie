@@ -4,6 +4,7 @@ const Storage = {
   // Keys
   KEYS: {
     API_KEY: "geminiApiKey",
+    MODEL: "geminiModel",
     FRIDGE_ITEMS: "fridgeItems",
     BOOKMARKED_RECIPES: "bookmarkedRecipes",
     DIET_TYPE: "dietType",
@@ -12,6 +13,9 @@ const Storage = {
 
   // Initialize storage with defaults
   init() {
+    if (!this.get(this.KEYS.MODEL)) {
+      this.set(this.KEYS.MODEL, "gemini-2.5-flash-lite");
+    }
     if (!this.get(this.KEYS.FRIDGE_ITEMS)) {
       this.set(this.KEYS.FRIDGE_ITEMS, []);
     }
@@ -55,6 +59,15 @@ const Storage = {
 
   setApiKey(key) {
     return this.set(this.KEYS.API_KEY, key);
+  },
+
+  // Model methods
+  getModel() {
+    return this.get(this.KEYS.MODEL) || "gemini-2.5-flash-lite";
+  },
+
+  setModel(model) {
+    return this.set(this.KEYS.MODEL, model);
   },
 
   // Fridge Items methods

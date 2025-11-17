@@ -80,16 +80,35 @@ const Components = {
           <h3 class="text-xl font-bold text-gray-800 mb-3">Ingredients</h3>
           <ul class="space-y-2">
             ${recipe.ingredients
-              .map(
-                (ingredient) => `
-              <li class="flex items-start">
-                <span class="text-emerald-600 mr-2">•</span>
-                <span class="text-gray-700">${ingredient}</span>
-              </li>
-            `,
-              )
+              .map((ingredient) => {
+                // Handle both string format (from recipe generator) and object format (from recipe finder)
+                if (typeof ingredient === "string") {
+                  return `
+                      <li class="flex items-start">
+                        <span class="text-emerald-600 mr-2">•</span>
+                        <span class="text-gray-700">${ingredient}</span>
+                      </li>
+                    `;
+                } else {
+                  // Object format with inFridge and alternative properties
+                  return `
+                      <li class="flex items-start">
+                        ${
+                          ingredient.inFridge
+                            ? '<svg class="w-5 h-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>'
+                            : '<svg class="w-5 h-5 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2" fill="none"/></svg>'
+                        }
+                        <div class="flex-1">
+                          <span class="text-gray-700 ${!ingredient.inFridge ? "text-gray-500" : ""}">${ingredient.item}</span>
+                          ${ingredient.alternative ? `<div class="text-sm text-blue-600 mt-1">💡 Alternative: ${ingredient.alternative}</div>` : ""}
+                        </div>
+                      </li>
+                    `;
+                }
+              })
               .join("")}
           </ul>
+          ${recipe.ingredients.some((i) => typeof i === "object" && i.inFridge !== undefined) && Storage.getFridgeItems().length > 0 ? '<p class="text-sm text-gray-500 mt-3"><svg class="w-4 h-4 inline text-green-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> = Available in your fridge</p>' : ""}
         </div>
         
         <div class="border-t pt-4">
