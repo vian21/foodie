@@ -24,6 +24,14 @@ const Components = {
             <svg class="w-4 h-4 text-orange-500 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c1.5 3 4.5 5 4.5 9 0 2.5-2 4.5-4.5 4.5S7.5 13.5 7.5 11c0-2 1-3.5 1.5-4.5C9.5 8 11 9 12 9c-1.5-2-1.5-4.5 0-7z"/><path d="M12 15.5c1.38 0 2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5-2.5-1.12-2.5-2.5 1.12-2.5 2.5-2.5z"/></svg>
             ${recipe.calories} cal
           </span>
+          ${
+            recipe.servings
+              ? `<span class="flex items-center">
+            <svg class="w-4 h-4 text-blue-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            ${recipe.servings}
+          </span>`
+              : ""
+          }
         </div>
         
         <p class="text-sm text-gray-600">
@@ -55,6 +63,14 @@ const Components = {
             <svg class="w-4 h-4 text-orange-500 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c1.5 3 4.5 5 4.5 9 0 2.5-2 4.5-4.5 4.5S7.5 13.5 7.5 11c0-2 1-3.5 1.5-4.5C9.5 8 11 9 12 9c-1.5-2-1.5-4.5 0-7z"/><path d="M12 15.5c1.38 0 2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5-2.5-1.12-2.5-2.5 1.12-2.5 2.5-2.5z"/></svg>
             ${recipe.calories} calories
           </span>
+          ${
+            recipe.servings
+              ? `<span class="text-gray-600 flex items-center">
+            <svg class="w-4 h-4 text-blue-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            Serves ${recipe.servings}
+          </span>`
+              : ""
+          }
           <span class="text-gray-600 bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">
             ${recipe.dietType}
           </span>

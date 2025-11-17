@@ -2,7 +2,7 @@
 
 const Gemini = {
   API_ENDPOINT:
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent",
 
   // Define JSON schema for structured output
   getRecipeSchema() {
@@ -108,7 +108,11 @@ const Gemini = {
       const jsonResponse = JSON.parse(text);
 
       // Extract recipes array from structured response
-      const recipes = this.parseRecipes(jsonResponse.recipes, mealType);
+      const recipes = this.parseRecipes(
+        jsonResponse.recipes,
+        mealType,
+        servings,
+      );
 
       return recipes;
     } catch (error) {
@@ -139,7 +143,7 @@ Make the recipes creative, delicious, and appropriate for the ${dietType} diet. 
   },
 
   // Parse recipes from AI response
-  parseRecipes(recipesArray, mealType) {
+  parseRecipes(recipesArray, mealType, servings) {
     try {
       // With structured output, we receive a clean array of recipes
       if (!Array.isArray(recipesArray)) {
@@ -151,6 +155,7 @@ Make the recipes creative, delicious, and appropriate for the ${dietType} diet. 
         id: `recipe-${Date.now()}-${index}`,
         name: recipe.name,
         mealType: mealType,
+        servings: servings || 1,
         calories: recipe.calories || 0,
         ingredients: recipe.ingredients || [],
         instructions: recipe.instructions || [],

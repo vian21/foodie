@@ -304,8 +304,16 @@ const App = {
       if (success) {
         input.value = "";
         this.renderFridge(document.getElementById("app-content"));
+        // Refocus the input field after re-rendering
+        setTimeout(() => {
+          const newInput = document.getElementById("fridge-item-input");
+          if (newInput) {
+            newInput.focus();
+          }
+        }, 0);
       } else {
         alert("This item is already in your fridge!");
+        input.focus();
       }
     }
   },
