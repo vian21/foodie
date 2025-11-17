@@ -95,7 +95,7 @@ const App = {
           <p class="text-gray-600">Choose a meal type and let AI create recipes for you</p>
         </div>
         
-        ${!hasApiKey ? Components.alert("Please set your Gemini API key in the BYOK page to generate recipes.", "warning") : ""}
+        ${!hasApiKey ? Components.alert('Please set your Gemini API key in the <a href="#byok" class="font-semibold underline hover:text-yellow-900">BYOK page</a> to generate recipes.', "warning") : ""}
         
         <div class="bg-white rounded-lg shadow-md p-6">
           <label class="block text-sm font-semibold text-gray-700 mb-2">Meal Type</label>
@@ -105,6 +105,24 @@ const App = {
             <option value="dinner">Dinner</option>
             <option value="snack">Snack</option>
           </select>
+          
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Servings</label>
+          <div class="flex items-center space-x-3 mb-4">
+            <button type="button" id="servings-decrease" 
+                    class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold w-10 h-10 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+              </svg>
+            </button>
+            <input type="number" id="servings" value="1" min="1" max="10" 
+                   class="w-20 text-center p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+            <button type="button" id="servings-increase" 
+                    class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold w-10 h-10 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+            </button>
+          </div>
           
           <button id="generate-btn" 
                   class="w-full bg-emerald-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-emerald-700 transition-colors ${!hasApiKey ? "opacity-50 cursor-not-allowed" : ""}"
@@ -119,12 +137,36 @@ const App = {
       </div>
     `;
 
+    // Setup servings controls
+    this.setupServingsControls();
+
     // Setup generate button
     if (hasApiKey) {
       document.getElementById("generate-btn").addEventListener("click", () => {
         this.generateRecipes(false);
       });
     }
+  },
+
+  // Setup servings increment/decrement controls
+  setupServingsControls() {
+    const servingsInput = document.getElementById("servings");
+    const decreaseBtn = document.getElementById("servings-decrease");
+    const increaseBtn = document.getElementById("servings-increase");
+
+    decreaseBtn.addEventListener("click", () => {
+      const current = parseInt(servingsInput.value);
+      if (current > 1) {
+        servingsInput.value = current - 1;
+      }
+    });
+
+    increaseBtn.addEventListener("click", () => {
+      const current = parseInt(servingsInput.value);
+      if (current < 10) {
+        servingsInput.value = current + 1;
+      }
+    });
   },
 
   // Render recipes list
@@ -139,14 +181,16 @@ const App = {
 
     return `
       <div class="space-y-4">
-        <div class="flex justify-between items-center">
-          <h3 class="text-xl font-bold text-gray-800">${recipes.length} Recipes Generated</h3>
+        <h3 class="text-xl font-bold text-gray-800">${recipes.length} Recipes Generated</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          ${recipes.map((recipe) => Components.recipeCard(recipe)).join("")}
+        </div>
+        <div class="flex justify-center pt-4">
           <button onclick="App.generateRecipes(true)" 
-                  class="bg-emerald-600 text-white text-sm font-semibold py-2 px-4 rounded-lg hover:bg-emerald-700">
+                  class="bg-emerald-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-emerald-700 transition-colors">
             Generate More
           </button>
         </div>
-        ${recipes.map((recipe) => Components.recipeCard(recipe)).join("")}
       </div>
     `;
   },
@@ -154,6 +198,7 @@ const App = {
   // Generate recipes
   async generateRecipes(addMore = false) {
     const mealType = document.getElementById("meal-type").value;
+    const servings = parseInt(document.getElementById("servings").value) || 1;
     const container = document.getElementById("recipes-container");
 
     container.innerHTML = Components.loadingSpinner(
@@ -161,7 +206,7 @@ const App = {
     );
 
     try {
-      const newRecipes = await Gemini.generateRecipes(mealType, 10);
+      const newRecipes = await Gemini.generateRecipes(mealType, 10, servings);
 
       if (addMore) {
         Storage.addGeneratedRecipes(newRecipes);
@@ -195,7 +240,9 @@ const App = {
                 "Star recipes from the home page to save them here!",
                 '<a href="#home" class="bg-emerald-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-emerald-700">Go to Home</a>',
               )
-            : bookmarked.map((recipe) => Components.recipeCard(recipe)).join("")
+            : `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                ${bookmarked.map((recipe) => Components.recipeCard(recipe)).join("")}
+              </div>`
         }
       </div>
     `;

@@ -2,10 +2,52 @@
 
 const Gemini = {
   API_ENDPOINT:
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent",
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+
+  // Define JSON schema for structured output
+  getRecipeSchema() {
+    return {
+      type: "object",
+      properties: {
+        recipes: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              name: {
+                type: "string",
+                description: "The name of the recipe",
+              },
+              calories: {
+                type: "integer",
+                description: "Estimated calories for the recipe",
+              },
+              ingredients: {
+                type: "array",
+                items: {
+                  type: "string",
+                },
+                description: "List of ingredients with amounts",
+              },
+              instructions: {
+                type: "array",
+                items: {
+                  type: "string",
+                },
+                description:
+                  "Step-by-step cooking instructions with timing and observations",
+              },
+            },
+            required: ["name", "calories", "ingredients", "instructions"],
+          },
+        },
+      },
+      required: ["recipes"],
+    };
+  },
 
   // Generate recipes using Gemini API
-  async generateRecipes(mealType, count = 10) {
+  async generateRecipes(mealType, count = 10, servings = 2) {
     const apiKey = Storage.getApiKey();
 
     if (!apiKey) {
@@ -21,7 +63,13 @@ const Gemini = {
     const fridgeItems = Storage.getFridgeItems();
     const dietType = Storage.getDietType();
 
-    const prompt = this.buildPrompt(mealType, fridgeItems, dietType, count);
+    const prompt = this.buildPrompt(
+      mealType,
+      fridgeItems,
+      dietType,
+      count,
+      servings,
+    );
 
     try {
       const response = await fetch(`${this.API_ENDPOINT}?key=${apiKey}`, {
@@ -42,6 +90,8 @@ const Gemini = {
           generationConfig: {
             temperature: 0.9,
             maxOutputTokens: 8000,
+            responseMimeType: "application/json",
+            responseSchema: this.getRecipeSchema(),
           },
         }),
       });
@@ -52,10 +102,13 @@ const Gemini = {
       }
 
       const data = await response.json();
-      const text = data.candidates[0].content.parts[0].text;
 
-      // Parse the JSON response
-      const recipes = this.parseRecipes(text, mealType);
+      // With structured output, the response is already valid JSON
+      const text = data.candidates[0].content.parts[0].text;
+      const jsonResponse = JSON.parse(text);
+
+      // Extract recipes array from structured response
+      const recipes = this.parseRecipes(jsonResponse.recipes, mealType);
 
       return recipes;
     } catch (error) {
@@ -65,54 +118,36 @@ const Gemini = {
   },
 
   // Build the prompt for Gemini
-  buildPrompt(mealType, fridgeItems, dietType, count) {
+  buildPrompt(mealType, fridgeItems, dietType, count, servings) {
     const fridgeList =
       fridgeItems.length > 0
         ? `Available ingredients in fridge: ${fridgeItems.join(", ")}`
         : "No specific ingredients available (suggest common ingredients)";
 
-    return `You are a professional chef and nutritionist. Generate ${count} unique ${mealType} recipes.
+    return `You are a professional chef and nutritionist. Generate ${count} unique ${mealType} recipes for ${servings} servings.
 
 Requirements:
 - Meal type: ${mealType}
 - Diet type: ${dietType}
+- Servings: ${servings} people
 - ${fridgeList}
-- Include calorie estimates for each recipe
+- Include calorie estimates per serving
 - Provide detailed step-by-step instructions
 - Include cooking times and important observations (e.g., "wait until potatoes are soft")
 
-Please respond with ONLY a valid JSON array in this exact format:
-[
-  {
-    "name": "Recipe Name",
-    "calories": 450,
-    "ingredients": ["ingredient 1 with amount", "ingredient 2 with amount"],
-    "instructions": ["Step 1 with details, timing and observations", "Step 2"]
-  }
-]
-
-Make the recipes creative, delicious, and appropriate for the ${dietType} diet. Include specific amounts for ingredients and detailed cooking instructions with timing and visual cues.`;
+Make the recipes creative, delicious, and appropriate for the ${dietType} diet. All ingredient quantities should be adjusted for ${servings} servings. Include specific amounts for ingredients (e.g., "2 cups flour", "1 tbsp olive oil") and detailed cooking instructions with timing and visual cues (e.g., "Cook for 5 minutes until golden brown").`;
   },
 
   // Parse recipes from AI response
-  parseRecipes(text, mealType) {
+  parseRecipes(recipesArray, mealType) {
     try {
-      // Try to extract JSON from the response
-      let jsonText = text;
-
-      // Remove markdown code blocks if present
-      jsonText = jsonText.replace(/```json\n?/g, "").replace(/```\n?/g, "");
-
-      // Find JSON array
-      const jsonMatch = jsonText.match(/\[[\s\S]*\]/);
-      if (jsonMatch) {
-        jsonText = jsonMatch[0];
+      // With structured output, we receive a clean array of recipes
+      if (!Array.isArray(recipesArray)) {
+        throw new Error("Invalid recipes format received from API");
       }
 
-      const recipes = JSON.parse(jsonText);
-
       // Add metadata to each recipe
-      return recipes.map((recipe, index) => ({
+      return recipesArray.map((recipe, index) => ({
         id: `recipe-${Date.now()}-${index}`,
         name: recipe.name,
         mealType: mealType,
@@ -125,7 +160,6 @@ Make the recipes creative, delicious, and appropriate for the ${dietType} diet. 
       }));
     } catch (error) {
       console.error("Error parsing recipes:", error);
-      console.log("Raw response:", text);
       throw new Error(
         "Failed to parse recipes from AI response. Please try again.",
       );

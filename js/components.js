@@ -6,7 +6,7 @@ const Components = {
     const isBookmarked = Storage.isRecipeBookmarked(recipe.id);
 
     return `
-      <div class="bg-white rounded-lg shadow-md p-4 mb-4 fade-in cursor-pointer hover:shadow-lg transition-shadow" 
+      <div class="bg-white rounded-lg shadow-md p-4 fade-in cursor-pointer hover:shadow-lg transition-shadow h-full" 
            onclick="App.showRecipeDetail('${recipe.id}')">
         <div class="flex justify-between items-start mb-2">
           <h3 class="text-lg font-bold text-gray-800 flex-1">${recipe.name}</h3>
