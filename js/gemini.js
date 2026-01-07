@@ -3,16 +3,15 @@
 const Gemini = {
   // Available Gemini models
   MODELS: {
-    "gemini-2.5-flash-lite": "Gemini 2.5 Flash-Lite (Ultra Fast, Recommended)",
+    "gemini-3-flash-preview": "Gemini 3 Flash (Ultra Fast & Intelligent)",
+    "gemini-3-pro-preview": "Gemini 3 Pro (Most Advanced)",
     "gemini-2.5-flash": "Gemini 2.5 Flash (Fast & Intelligent)",
-    "gemini-2.5-pro": "Gemini 2.5 Pro (Most Advanced)",
-    "gemini-2.0-flash": "Gemini 2.0 Flash (Second Generation)",
-    "gemini-2.0-flash-exp": "Gemini 2.0 Flash Experimental",
+    "gemini-2.5-pro": "Gemini 2.5 Pro (Advanced)",
   },
 
   // Get API endpoint for selected model
   getApiEndpoint() {
-    const model = Storage.getModel() || "gemini-2.5-flash-lite";
+    const model = Storage.getModel() || "gemini-3-flash-preview";
     return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
   },
 

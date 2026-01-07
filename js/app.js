@@ -527,7 +527,7 @@ const App = {
   // BYOK Page
   renderBYOK(container) {
     const apiKey = Storage.getApiKey() || "";
-    const currentModel = Storage.getModel() || "gemini-2.5-flash-lite";
+    const currentModel = Storage.getModel() || "gemini-3-flash-preview";
 
     container.innerHTML = `
       <div class="space-y-6">
